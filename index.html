@@ -285,4 +285,391 @@
 
         <h3>תמחור העבודה</h3>
         <div id="pricesContainer"></div>
-        <button type="button" class="btn-add" style="background:#f0fdf4; color:#166534
+        <button type="button" class="btn-add" style="background:#f0fdf4; color:#166534; border-color:#166534;" onclick="addPriceItem()">➕ הוסף שורת מחיר חדשה</button>
+
+        <label>נוסח מע״מ</label>
+        <select id="vatText">
+          <option value="המחירים אינם כוללים מע״מ.">המחירים אינם כוללים מע״מ.</option>
+          <option value="המחירים כוללים מע״מ.">המחירים כוללים מע״מ.</option>
+          <option value="">ללא שורת מע״מ</option>
+        </select>
+
+        <h3>תקופת אחריות והערות</h3>
+          
+        <div class="checkbox-container">
+          <input type="checkbox" id="includeWarranty" onchange="toggleWarrantyFields(); generatePreview();" checked />
+          <label for="includeWarranty">הוסף סעיף אחריות להצעת המחיר</label>
+        </div>
+
+        <div id="warrantyFieldsContainer" class="warranty-fields active">
+          <label>אחריות בעבור (טקסט חופשי):</label>
+          <input type="text" id="warrantyFor" value="איטום העבודה" placeholder="למשל: איטום הגג, העבודה שבוצעה" />
+
+          <label>משך האחריות</label>
+          <select id="warrantyYears">
+            <option value="שנה אחת">שנה אחת</option>
+            <option value="שלוש שנות אחריות">שלוש שנות אחריות</option>
+            <option value="חמש שנות אחריות">חמש שנות אחריות</option>
+            <option value="שבע שנות אחריות">שבע שנות אחריות</option>
+            <option value="עשר שנות אחריות" selected>עשר שנות אחריות</option>
+          </select>
+        </div>
+
+        <label style="margin-top: 14px;">משפט סיום / הערה חופשית (אופציונלי)</label>
+        <textarea id="notes" placeholder="למשל: נשמח לענות לכל שאלה."></textarea>
+
+        <button type="submit" class="btn-main">📥 שמירה כ-PDF / הדפסת הצעה נקייה</button>
+        <button type="button" class="btn-email" onclick="sendViaEmail()">📧 שליחת פרטי ההצעה במייל</button>
+      </form>
+    </div>
+
+    <div class="card preview-card">
+      <h2 class="no-print" style="color:#64748b; font-size: 14px; margin-bottom: 12px;">תצוגה מקדימה רשמית (איך שזה יישמר ב-PDF)</h2>
+      <div class="preview-paper" id="preview"></div>
+    </div>
+  </div>
+
+  <script>
+    let currentCategory = 'roof';
+
+    const bankItems = {
+      roof: [
+        'בטרם תחילת עבודות האיטום יש לבצע ניקיון יסודי של שטח הגג.',
+        'פירוק כל היריעות הנפוחות סביב היקף הגג ופינוי הפסולת לאתר מורשה.',
+        'פירוק כל היריעות הנפוחות סביב היקף הגג ופינוי הפסולת למכולה.',
+        'הרמת הדודים והקולטים ליצירת שטח תקני לביצוע עבודות האיטום.',
+        'שטיפת הגג בלחץ מים לקבלת תשתית טובה לביצוע עבודות האיטום.',
+        'במידה ויש צנרת חודרת לגג יבוצעו קוביות בטון סביב הצנרת ליצירת שטח תקני לביצוע עבודות האיטום.',
+        'בסיום העבודה תבוצע בדיקת הצפה בת 72 שעות המאשרת את תקינות האיטום והעבודה.',
+        'ראשית יש לפנות את החצץ מהגג למכולה ע״י מנוף ופינוי הפסולת לאתר מורשה.',
+        'יש לגלף ולפנות את הקלקר סביב הגג.',
+        'יישום רנדופן, רשת יציקה ובטקל בכל שטח הגג.',
+        'במידה ולא יבוצע בטקל יש להוציא את היריעות הקיימות על מנת לקבל שטח תקין לביצוע איטום.',
+        'יש לבצע בדיקה לזרימה תקנית של המים למרזבים ושהמרזבים אינם פגועים.'
+      ],
+      balcony: [
+        'בטרם תחילת עבודות האיטום יש לבצע ניקיון יסודי של השטח.',
+        'פירוק כל היריעות הנפוחות סביב היקף השטח ופינוי הפסולת לאתר מורשה.',
+        'פירוק כל היריעות הנפוחות סביב היקף השטח ופינוי הפסולת למכולה.',
+        'בטרם תחילת העבודות יש לבצע פירוק של כל המרצפות וחומרי הריצוף במרפסת, לנקות את השטח מהפסולת ולפנות את כל הפסולת למכולה/לאתר מורשה.',
+        'שטיפת השטח בלחץ מים לקבלת תשתית טובה לביצוע עבודות האיטום.',
+        'תיקוני גלאנס (בטון) במקומות הנדרשים - כלומר לאחר גילוי תשתית הבטון בשטח יש לוודא כי השטח חלק מכל שיפוע על מנת לקבל תשתית חלקה ותקנית לריתוך היריעות.'
+      ],
+      wall: [
+        'שטיפת הקיר בלחץ מים להכנת תשתית תקנית לביצוע עבודות האיטום.',
+        'פתיחת הכוחלה וניקיון כללי של השטח להכנת הקיר לכיחול חדש.',
+        'התזה של חומר איטום מסוג סילר של חברת ננו, זהו חומר המונע ספיגת המים לאבן.'
+      ],
+      materials: [
+        'מריחת זפת חמה של חברת ביטום מסוג - 25/75.',
+        'מריחת פריימר תקני 101 של חברת ביטום כחומר מקשר בין רצפת הגג לשכבת האיטום החדש, בעל תו תקן ישראלי והמתנה לייבוש תקני.',
+        'אספקה והלחמת יריעות ביטומניות מסוג - APP שכבה בעובי 5 מ״מ עם אגרגרת, בעלות תו תקן של חברת ביטום. היריעות ירותכו בחפיפה של 10 ס״מ com עליה של 30 ס״מ סביב היקף השטח.',
+        'אספקה והלחמת יריעות ביטומניות מסוג - SBS שכבה בעובי 5 מ״מ. היריעות ירותכו בשתי שכבות, בעלות תו תקן של חברת ביטום. היריעות ירותכו בחפיפה של 10 ס״מ עם עליה של 30 ס״מ סביב היקף השטח.',
+        'אספקה והלחמת יריעות ביטומניות מסוג - SBS שכבה בעובי 4 מ״מ, בעלות תו תקן של חברת ביטום. היריעות ירותכו בחפיפה של 10 ס״מ עם עליה של 30 ס״מ סביב היקף הגג.',
+        'מריחת חומר מסוג - ST של חברת דבטק, זהו חומר על בסיס סיליקוני תוצרת גרמניה העמיד למים עומדים ולקרני ה-UV של השמש. המריחה תתבצע ב-2 שכבות לקבלת שכבת איטום תקנית.',
+        'מריחת חומר מסוג PB - זהו חומר ביטומני פוליאוריטני העמיד למים עומדים. השטח יימרח ב-2 שכבות, שכבה ראשונה וייבוש תקני ולאחר מכן שכבה שנייה.',
+        'בסיום עבודת הריתוך, יבוצע מריחת חומר איטום מסוג - מסטיק 244 של חברת ביטום, לשמירת התנתקות היריעה באזורים הרגישים לאורך זמן.'
+      ],
+      general: [
+        'בטרם תחילת העבודות יש לבצע ניקיון יסודי של השטח.',
+        'פינוי הפסולת לאתר מורשה.',
+        'פינוי הפסולת למכולה.'
+      ]
+    };
+
+    let selectedItems = [];
+
+    function renderBank() {
+      Object.keys(bankItems).forEach(category => {
+        const bankElement = document.getElementById(category);
+        bankElement.innerHTML = bankItems[category].map((text, index) => `
+          <div class="bank-item">
+            <input type="checkbox" data-category="${category}" data-index="${index}">
+            <span>${text}</span>
+            <button type="button" class="btn-delete-bank" onclick="removeItemFromBank('${category}', ${index}, event)">❌</button>
+          </div>
+        `).join('');
+      });
+    }
+
+    function showBank(id, button) {
+      currentCategory = id;
+      document.querySelectorAll('.section-bank').forEach(bank => bank.classList.remove('active'));
+      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+      document.getElementById(id).classList.add('active');
+      button.classList.add('active');
+    }
+
+    function addNewItemToBank() {
+      const input = document.getElementById('customBankText');
+      const text = input.value.trim();
+      if (!text) return;
+
+      bankItems[currentCategory].push(text);
+      input.value = '';
+      renderBank();
+    }
+
+    function removeItemFromBank(category, index, event) {
+      event.preventDefault();
+      event.stopPropagation();
+      bankItems[category].splice(index, 1);
+      renderBank();
+    }
+
+    function addCheckedBankItems() {
+      const activeBank = document.querySelector('.section-bank.active');
+      const checkedItems = activeBank.querySelectorAll('input[type="checkbox"]:checked');
+
+      checkedItems.forEach(input => {
+        const category = input.dataset.category;
+        const index = Number(input.dataset.index);
+        selectedItems.push({ type: 'item', text: bankItems[category][index] });
+        input.checked = false;
+      });
+
+      renderSelectedItems();
+      generatePreview();
+    }
+
+    function addNoteAfter(index) {
+      const note = prompt('כתוב הערה ממודגשת שתופיע בשורה נפרדת:');
+      if (!note) return;
+      selectedItems.splice(index + 1, 0, { type: 'note', text: note });
+      renderSelectedItems();
+      generatePreview();
+    }
+
+    function removeSelectedItem(index) {
+      selectedItems.splice(index, 1);
+      renderSelectedItems();
+      generatePreview();
+    }
+
+    function moveItem(index, direction) {
+      const newIndex = index + direction;
+      if (newIndex < 0 || newIndex >= selectedItems.length) return;
+      const item = selectedItems.splice(index, 1)[0];
+      selectedItems.splice(newIndex, 0, item);
+      renderSelectedItems();
+      generatePreview();
+    }
+
+    function renderSelectedItems() {
+      const box = document.getElementById('selectedItems');
+      if (selectedItems.length === 0) {
+        box.innerHTML = '<div class="selected-item">עדיין לא בחרת סעיפים.</div>';
+        return;
+      }
+
+      box.innerHTML = selectedItems.map((item, index) => `
+        <div class="selected-item">
+          <strong>${item.type === 'note' ? 'הערה ממודגשת' : 'סעיף'}:</strong> ${item.text}
+          <div class="selected-actions">
+            <button type="button" class="btn-small" onclick="moveItem(${index}, -1)">⬆️ למעלה</button>
+            <button type="button" class="btn-small" onclick="moveItem(${index}, 1)">⬇️ למטה</button>
+            <button type="button" class="btn-note" onclick="addNoteAfter(${index})">🟨 הוסף הערה מתחת</button>
+            <button type="button" class="btn-remove" onclick="removeSelectedItem(${index})">מחק</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function addPriceItem() {
+      const pricesContainer = document.getElementById('pricesContainer');
+      const index = document.querySelectorAll('.price-item').length;
+      const letters = ['א׳', 'ב׳', 'ג׳', 'ד׳', 'ה׳'];
+
+      const div = document.createElement('div');
+      div.className = 'price-item';
+      div.innerHTML = `
+        <label>נוסח מחיר מובנה</label>
+        <select class="priceText" onchange="generatePreview()">
+          <option value="המחיר בעבור המערכת לאיטום הגג">המחיר בעבור המערכת לאיטום הגג</option>
+          <option value="המחיר בעבור העבודה הינו">המחיר בעבור העבודה הינו</option>
+          <option value="המחיר בעבור סעיף ${letters[index] || ''}">המחיר בעבור סעיף ${letters[index] || ''}</option>
+        </select>
+
+        <label>סכום בשקלים (מספר בלבד)</label>
+        <input type="number" class="amount" placeholder="למשל: 12321" oninput="generatePreview()">
+
+        <label>או נוסח תמחור חופשי משלך</label>
+        <input type="text" class="customPriceText" placeholder="למשל: בעבור סעיף ז' למפרט" oninput="generatePreview()">
+
+        <button type="button" class="btn-remove" style="margin-top:10px;" onclick="this.parentElement.remove(); generatePreview();">מחק שורת מחיר זו</button>
+      `;
+
+      pricesContainer.appendChild(div);
+      generatePreview();
+    }
+
+    function getPrices() {
+      return Array.from(document.querySelectorAll('.price-item')).map(item => {
+        return {
+          priceText: item.querySelector('.priceText').value,
+          amount: item.querySelector('.amount').value,
+          customPriceText: item.querySelector('.customPriceText').value.trim()
+        };
+      }).filter(item => item.amount || item.customPriceText);
+    }
+
+    function formatPricesHtml() {
+      const prices = getPrices();
+      if (prices.length === 0) return '<div>טרם הוגדרו עלויות.</div>';
+
+      return prices.map(item => {
+        const finalPriceText = item.customPriceText ? item.customPriceText : item.priceText;
+        const formattedMoney = item.amount ? `${Number(item.amount).toLocaleString()} ₪` : '';
+        return `<div class="price-line">❖ ${finalPriceText}${formattedMoney ? ' : ' + formattedMoney : ''}</div>`;
+      }).join('');
+    }
+
+    function formatWorkItemsHtml() {
+      const hebLetters = ['א', 'ב', 'ג', 'ד', 'ה', 'ו', 'ז', 'ח', 'ט', 'י', 'כ', 'ל', 'מ', 'נ', 'ס', 'ע'];
+      let letterIndex = 0;
+
+      if (selectedItems.length === 0) return '<div>טרם נבחרו פעולות.</div>';
+
+      return selectedItems.map(item => {
+        if (item.type === 'note') {
+          return `<div class="note-row">${item.text}</div>`;
+        }
+        const line = `<div class="item-row">${hebLetters[letterIndex]}. ${item.text}</div>`;
+        letterIndex++;
+        return line;
+      }).join('');
+    }
+
+    function toggleWarrantyFields() {
+      const isChecked = document.getElementById('includeWarranty').checked;
+      const container = document.getElementById('warrantyFieldsContainer');
+      if (isChecked) {
+        container.classList.add('active');
+      } else {
+        container.classList.remove('active');
+      }
+    }
+
+    function generatePreview() {
+      const preview = document.getElementById('preview');
+
+      const dateValue = document.getElementById('date').value;
+      const hebrewDate = document.getElementById('hebrewDate').value;
+      const customer = document.getElementById('customer').value || '________________';
+      const address = document.getElementById('address').value || '________________';
+      const subject = document.getElementById('subject').value || '';
+      const openingText = document.getElementById('openingText').value || '';
+      const workDescription = document.getElementById('workDescription').value || '';
+      const vatText = document.getElementById('vatText').value;
+      
+      const includeWarranty = document.getElementById('includeWarranty').checked;
+      const warrantyFor = document.getElementById('warrantyFor').value || 'איטום העבודה';
+      const warrantyYears = document.getElementById('warrantyYears').value;
+      
+      const notes = document.getElementById('notes').value || '';
+
+      let formattedDate = '';
+      if (dateValue) {
+        const parts = dateValue.split('-');
+        if (parts.length === 3) {
+          formattedDate = `${parts[2]}/${parts[1]}/${parts[0]}`;
+        }
+      }
+
+      let warrantyHtml = '';
+      if (includeWarranty) {
+        warrantyHtml = `
+          <div class="section-title">להלן תוקף אחריות :</div>
+          <div style="margin-bottom: 15px;">
+            <div>❖ אחריות בעבור ${warrantyFor} תינתן ${warrantyYears}.</div>
+            <div>❖ האחריות היא רק על העבודה שבוצעה ע״י חברת י.שם-טוב.</div>
+            <div class="certification-text">ברשותנו תעודת אוטם מורשה וניסיון של למעלה מ־20 שנה בתחום האיטום. כלל העבודות מבוצעות תוך הקפדה על סטנדרטים גבוהים, שימוש בחומרים איכותיים ומתן פתרונות מקצועיים ואמינים לאורך זמן.</div>
+          </div>
+        `;
+      }
+
+      preview.innerHTML = `
+        <div class="doc-content">
+          <div class="logo-box">
+            <img src="logo.png" alt="לוגו י.שם-טוב" class="company-logo"><br>
+            <div class="logo-subtitle">טכנולוגיות איטום מתקדמות</div>
+          </div>
+          <div class="doc-divider"></div>
+
+          <div class="customer-info-box">
+            <div class="info-right">
+              <div class="info-row">לכבוד: ${customer}</div>
+              <div class="info-row">רחוב: ${address}</div>
+              <div style="margin-top: 10px;">שלום רב,</div>
+            </div>
+            <div class="info-left">
+              <div class="info-row">${formattedDate}</div>
+              <div class="info-row">${hebrewDate}</div>
+            </div>
+          </div>
+
+          <div class="doc-subject">הנדון : ${subject}</div>
+          <div class="doc-text">${openingText}</div>
+
+          <div style="margin-bottom: 15px;">
+            <strong>תיאור העבודה והמקום :</strong> ${workDescription}
+          </div>
+
+          <div class="section-title">להלן מפרט הפעולות המתבקשות :</div>
+          <div style="margin-bottom: 15px;">
+            ${formatWorkItemsHtml()}
+          </div>
+
+          <div class="section-title">להלן המחירים:</div>
+          <div style="margin-bottom: 15px;">
+            ${formatPricesHtml()}
+            ${vatText ? `<div style="margin-top: 6px;">${vatText}</div>` : ''}
+          </div>
+
+          ${warrantyHtml}
+
+          ${notes ? `<div class="doc-text" style="margin-top: 15px;">${notes}</div>` : ''}
+
+          <div class="closing-signature">
+            <div>בברכה,</div>
+            <div style="font-weight: bold; margin-top: 2px;">י.שם-טוב</div>
+          </div>
+        </div>
+
+        <div class="footer-normal">
+          <div class="footer-phones">טלפקס' 02-6411418, נייד- יובל 054-2359359</div>
+          <div class="footer-email">y.shemtov.z@gmail.com</div>
+        </div>
+      `;
+    }
+
+    // 📧 פונקציית מייל נקייה וקצרה לבקשתך
+    function sendViaEmail() {
+      const subject = "י.שם-טוב | הצעת מחיר";
+      const bodyText = "היי, בהמשך לשיחתנו להלן הצעת מחיר לאיטום.";
+      
+      const mailtoUrl = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(bodyText)}`;
+      window.location.href = mailtoUrl;
+    }
+
+    function bindLivePreview() {
+      document.querySelectorAll('#quoteForm input, #quoteForm textarea, #quoteForm select').forEach(element => {
+        element.addEventListener('input', generatePreview);
+        element.addEventListener('change', generatePreview);
+      });
+    }
+
+    renderBank();
+    renderSelectedItems();
+    addPriceItem();
+    
+    const today = new Date();
+    const offset = today.getTimezoneOffset();
+    const localToday = new Date(today.getTime() - (offset*60*1000));
+    document.getElementById('date').value = localToday.toISOString().split('T')[0];
+    
+    bindLivePreview();
+    generatePreview();
+  </script>
+</body>
+</html>
