@@ -29,7 +29,7 @@
     .selected-item:last-child { border-bottom:none; }
     .selected-actions { display:flex; flex-wrap:wrap; gap:8px; margin-top:10px; }
     .price-item { background:#f8fafc; border:1px solid #ddd; border-radius:10px; padding:14px; margin-top:12px; }
-    
+     
     .btn-add { background:#e8eef7; color: #1e40af; width: 100%; padding: 14px; border: 1px dashed #1e40af; border-radius: 9px; }
     .btn-main { background:#059669; color:white; width:100%; font-weight:bold; font-size:18px; padding:16px; margin-top: 20px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
     .btn-main:hover { background:#047857; }
@@ -43,7 +43,7 @@
     .checkbox-container label { margin: 0; cursor: pointer; }
     .warranty-fields { display: none; background: #f8fafc; padding: 14px; border-radius: 8px; border: 1px solid #e2e8f0; margin-top: 8px; }
     .warranty-fields.active { display: block; }
-    
+     
     /* עיצוב טקסט קטן להסמכה */
     .certification-text { font-size: 12.5px; color: #333; margin-top: 8px; text-align: justify; }
 
@@ -70,37 +70,36 @@
       display: flex;
       flex-direction: column;
     }
-    
+     
     /* קופסת תוכן המסמך */
     .doc-content { flex: 1; }
-    
-    /* קופסת לוגו טקסטואלית ממורכזת */
-    .logo-box { text-align: center; margin-bottom: 15px; padding-top: 10px; width: 100%; }
-    .logo-title { font-family: Arial, Helvetica, sans-serif; font-weight: 900; font-size: 32px; letter-spacing: -0.5px; color: #000; margin: 0; }
-    .logo-subtitle { font-family: Arial, Helvetica, sans-serif; font-weight: bold; font-size: 13px; color: #222; letter-spacing: 0.5px; margin-top: 4px; }
-    
+     
+    /* קופסת לוגו ממורכזת */
+    .logo-box { text-align: center; margin-bottom: 15px; padding-top: 5px; width: 100%; }
+    .company-logo { max-height: 100px; width: auto; display: inline-block; }
+     
     .doc-divider { height: 1.5px; background-color: #000; margin: 12px 0 20px 0; width: 100%; }
-    
+     
     /* קוביית פרטי הלקוח והתאריכים */
     .customer-info-box { display: flex; justify-content: space-between; margin-bottom: 20px; }
     .info-right { text-align: right; }
     .info-left { text-align: left; }
     .info-row { margin-bottom: 4px; }
-    
+     
     /* הנדון ממורכז */
     .doc-subject { font-size: 15px; font-weight: bold; margin: 20px 0; text-align: center; text-decoration: underline; }
-    
+     
     /* כותרות סעיפים */
     .section-title { font-size: 14.5px; font-weight: bold; color: #000; margin-top: 18px; margin-bottom: 6px; text-decoration: underline; }
-    
+     
     .doc-text { margin-bottom: 10px; white-space: pre-line; text-align: justify; }
     .item-row { margin-bottom: 5px; padding-right: 5px; text-align: justify; }
     .note-row { font-weight: bold; margin: 8px 0; padding-right: 15px; }
     .price-line { margin-bottom: 4px; font-weight: bold; }
-    
+     
     /* אזור חתימה */
     .closing-signature { margin-top: 35px; margin-bottom: 40px; text-align: right; }
-    
+     
     /* כותרת תחתית (Footer) כטקסט רגיל ויציב בתחתית העמוד הלבן */
     .footer-normal { 
       text-align: center; 
@@ -174,7 +173,7 @@
         <input type="text" id="workDescription" value="איטום גג." />
 
         <h3 style="margin-top: 25px; margin-bottom: 5px;">בנק סעיפי עבודה</h3>
-        
+         
         <label style="margin-top: 5px; color: #4b5563;">הוספת סעיף חדש לבנק (לטאב הנבחר):</label>
         <div class="custom-bank-input-group">
           <input type="text" id="customBankText" placeholder="הקלד כאן סעיף עבודה חדש שתרצה להוסיף לבנק..." />
@@ -212,7 +211,7 @@
         </select>
 
         <h3>תקופת אחריות והערות</h3>
-        
+         
         <div class="checkbox-container">
           <input type="checkbox" id="includeWarranty" onchange="toggleWarrantyFields(); generatePreview();" checked />
           <label for="includeWarranty">הוסף סעיף אחריות להצעת המחיר</label>
@@ -380,7 +379,7 @@
 
       box.innerHTML = selectedItems.map((item, index) => `
         <div class="selected-item">
-          <strong>${item.type === 'note' ? 'הערה מודגשת' : 'סעיף'}:</strong> ${item.text}
+          <strong>${item.type === 'note' ? 'הערה ממודגשת' : 'סעיף'}:</strong> ${item.text}
           <div class="selected-actions">
             <button type="button" class="btn-small" onclick="moveItem(${index}, -1)">⬆️ למעלה</button>
             <button type="button" class="btn-small" onclick="moveItem(${index}, 1)">⬇️ למטה</button>
@@ -507,8 +506,7 @@
       preview.innerHTML = `
         <div class="doc-content">
           <div class="logo-box">
-            <div class="logo-title">י. שם-טוב</div>
-            <div class="logo-subtitle">טכנולוגיות איטום מתקדמות</div>
+            <img src="logo.png" alt="לוגו י.שם-טוב" class="company-logo">
           </div>
           <div class="doc-divider"></div>
 
