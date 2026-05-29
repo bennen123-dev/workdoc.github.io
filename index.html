@@ -35,16 +35,22 @@
           <meta charset="UTF-8">
           <title>הצעת מחיר</title>
           <style>
+            /* 💥 פתרון הקסם המאולץ לאייפון: מעלימים את שולי הדפדפן ויוצרים שוליים פנימיים בקוד */
             @page {
               size: A4;
-              margin: 0mm; /* מבטל לחלוטין כותרות ונתיבי URL של הדפדפן */
+              margin: 0 !important; /* דוחף את כותרות ה-URL של האייפון מחוץ לדף */
+            }
+            html, body {
+              margin: 0;
+              padding: 0;
+              -webkit-print-color-adjust: exact;
+              print-color-adjust: exact;
             }
             body {
               font-family: Arial, sans-serif;
               direction: rtl;
               background: #fff;
-              margin: 0;
-              padding: 40px 45px;
+              padding: 25mm 20mm 25mm 20mm; /* השוליים האמיתיים של המסמך מוגדרים פה */
               box-sizing: border-box;
               color: #000;
               font-size: 14px;
@@ -81,9 +87,8 @@
           </style>
         </head>
         <body>
-          ${previewContent}
+          \${previewContent}
           <script>
-            // ממתין שהלוגו ייטען ואז מדפיס וסוגר את החלון
             window.onload = function() {
               window.print();
               setTimeout(function() { window.close(); }, 500);
@@ -284,7 +289,7 @@
         <h3>מפרט הפעולות שנבחרו להצעה:</h3>
         <div id="selectedItems" class="selected-list"></div>
 
-        <h3 style="margin-top: 25px;">תמחור העבודה</h3>
+        <h3>תמחור העבודה</h3>
         <div id="pricesContainer"></div>
         <button type="button" class="btn-add" style="background:#f0fdf4; color:#166534; border-color:#166534;" onclick="addPriceItem()">➕ הוסף שורת מחיר חדשה</button>
 
@@ -465,12 +470,12 @@
 
       box.innerHTML = selectedItems.map((item, index) => `
         <div class="selected-item">
-          <strong>${item.type === 'note' ? 'הערה ממודגשת' : 'סעיף'}:</strong> ${item.text}
+          <strong>\${item.type === 'note' ? 'הערה ממודגשת' : 'סעיף'}:</strong> \${item.text}
           <div class="selected-actions">
-            <button type="button" class="btn-small" onclick="moveItem(${index}, -1)">⬆️ למעלה</button>
-            <button type="button" class="btn-small" onclick="moveItem(${index}, 1)">⬇️ למטה</button>
-            <button type="button" class="btn-note" onclick="addNoteAfter(${index})">🟨 הוסף הערה מתחת</button>
-            <button type="button" class="btn-remove" onclick="removeSelectedItem(${index})">מחק</button>
+            <button type="button" class="btn-small" onclick="moveItem(\${index}, -1)">⬆️ למעלה</button>
+            <button type="button" class="btn-small" onclick="moveItem(\${index}, 1)">⬇️ למטה</button>
+            <button type="button" class="btn-note" onclick="addNoteAfter(\${index})">🟨 הוסף הערה מתחת</button>
+            <button type="button" class="btn-remove" onclick="removeSelectedItem(\${index})">מחק</button>
           </div>
         </div>
       `).join('');
@@ -488,7 +493,7 @@
         <select class="priceText" onchange="generatePreview()">
           <option value="המחיר בעבור המערכת לאיטום הגג">המחיר בעבור המערכת לאיטום הגג</option>
           <option value="המחיר בעבור העבודה הינו">המחיר בעבור העבודה הינו</option>
-          <option value="המחיר בעבור סעיף ${letters[index] || ''}">המחיר בעבור סעיף ${letters[index] || ''}</option>
+          <option value="המחיר בעבור סעיף \${letters[index] || ''}">המחיר בעבור סעיף \${letters[index] || ''}</option>
         </select>
 
         <label>סכום בשקלים (מספר בלבד)</label>
@@ -520,8 +525,8 @@
 
       return prices.map(item => {
         const finalPriceText = item.customPriceText ? item.customPriceText : item.priceText;
-        const formattedMoney = item.amount ? `${Number(item.amount).toLocaleString()} ₪` : '';
-        return `<div class="price-line">❖ ${finalPriceText}${formattedMoney ? ' : ' + formattedMoney : ''}</div>`;
+        const formattedMoney = item.amount ? `\${Number(item.amount).toLocaleString()} ₪` : '';
+        return `<div class="price-line">❖ \${finalPriceText}\${formattedMoney ? ' : ' + formattedMoney : ''}</div>`;
       }).join('');
     }
 
@@ -533,9 +538,9 @@
 
       return selectedItems.map(item => {
         if (item.type === 'note') {
-          return `<div class="note-row">${item.text}</div>`;
+          return `<div class="note-row">\${item.text}</div>`;
         }
-        const line = `<div class="item-row">${hebLetters[letterIndex]}. ${item.text}</div>`;
+        const line = `<div class="item-row">\${hebLetters[letterIndex]}. \${item.text}</div>`;
         letterIndex++;
         return line;
       }).join('');
@@ -573,7 +578,7 @@
       if (dateValue) {
         const parts = dateValue.split('-');
         if (parts.length === 3) {
-          formattedDate = `${parts[2]}/${parts[1]}/${parts[0]}`;
+          formattedDate = `\${parts[2]}/\${parts[1]}/\${parts[0]}`;
         }
       }
 
@@ -582,7 +587,7 @@
         warrantyHtml = `
           <div class="section-title">להלן תוקף אחריות :</div>
           <div style="margin-bottom: 15px;">
-            <div>❖ אחריות בעבור ${warrantyFor} תינתן ${warrantyYears}.</div>
+            <div>❖ אחריות בעבור \${warrantyFor} תינתן \${warrantyYears}.</div>
             <div>❖ האחריות היא רק על העבודה שבוצעה ע״י חברת י.שם-טוב.</div>
             <div class="certification-text">ברשותנו תעודת אוטם מורשה וניסיון של למעלה מ־20 שנה בתחום האיטום. כלל העבודות מבוצעות תוך הקפדה על סטנדרטים גבוהים, שימוש בחומרים איכותיים ומתן פתרונות מקצועיים ואמינים לאורך זמן.</div>
           </div>
@@ -599,37 +604,37 @@
 
           <div class="customer-info-box">
             <div class="info-right">
-              <div class="info-row">לכבוד: ${customer}</div>
-              <div class="info-row">רחוב: ${address}</div>
+              <div class="info-row">לכבוד: \${customer}</div>
+              <div class="info-row">רחוב: \${address}</div>
               <div style="margin-top: 10px;">שלום רב,</div>
             </div>
             <div class="info-left">
-              <div class="info-row">${formattedDate}</div>
-              <div class="info-row">${hebrewDate}</div>
+              <div class="info-row">\${formattedDate}</div>
+              <div class="info-row">\${hebrewDate}</div>
             </div>
           </div>
 
-          <div class="doc-subject">הנדון : ${subject}</div>
-          <div class="doc-text">${openingText}</div>
+          <div class="doc-subject">הנדון : \${subject}</div>
+          <div class="doc-text">\${openingText}</div>
 
           <div style="margin-bottom: 15px;">
-            <strong>תיאור העבודה והמקום :</strong> ${workDescription}
+            <strong>תיאור העבודה והמקום :</strong> \${workDescription}
           </div>
 
           <div class="section-title">להלן מפרט הפעולות המתבקשות :</div>
           <div style="margin-bottom: 15px;">
-            ${formatWorkItemsHtml()}
+            \${formatWorkItemsHtml()}
           </div>
 
           <div class="section-title">להלן המחירים:</div>
           <div style="margin-bottom: 15px;">
-            ${formatPricesHtml()}
-            ${vatText ? `<div style="margin-top: 6px;">${vatText}</div>` : ''}
+            \${formatPricesHtml()}
+            \${vatText ? `<div style="margin-top: 6px;">\${vatText}</div>` : ''}
           </div>
 
-          ${warrantyHtml}
+          \${warrantyHtml}
 
-          ${notes ? `<div class="doc-text" style="margin-top: 15px;">${notes}</div>` : ''}
+          \${notes ? `<div class="doc-text" style="margin-top: 15px;">\${notes}</div>` : ''}
 
           <div class="closing-signature">
             <div>בברכה,</div>
@@ -645,44 +650,10 @@
     }
 
     function sendViaEmail() {
-      const subject = "י.שם-טוב | " + (document.getElementById('subject').value || 'הצעת מחיר');
-      const customer = document.getElementById('customer').value || '';
-      const address = document.getElementById('address').value || '';
-      const workDescription = document.getElementById('workDescription').value || '';
+      const subject = "י.שם-טוב | הצעת מחיר";
+      const bodyText = "היי, בהמשך לשיחתנו להלן הצעת מחיר לאיטום.";
       
-      let bodyText = `שלום ${customer},\n`;
-      if(address) bodyText += `כתובת העבודה: ${address}\n`;
-      bodyText += `\nתיאור העבודה: ${workDescription}\n\n`;
-      
-      bodyText += `--- מפרט הפעולות ---\n`;
-      const hebLetters = ['א', 'ב', 'ג', 'ד', 'ה', 'ו', 'ז', 'ח', 'ט', 'י', 'כ', 'ל', 'מ', 'נ', 'ס', 'ע'];
-      let letterIndex = 0;
-      selectedItems.forEach(item => {
-        if (item.type === 'note') {
-          bodyText += `* ${item.text}\n`;
-        } else {
-          bodyText += `${hebLetters[letterIndex]}. ${item.text}\n`;
-          letterIndex++;
-        }
-      });
-      
-      bodyText += `\n--- תמחור ---\n`;
-      const prices = getPrices();
-      prices.forEach(item => {
-        const finalPriceText = item.customPriceText ? item.customPriceText : item.priceText;
-        const formattedMoney = item.amount ? `${Number(item.amount).toLocaleString()} ₪` : '';
-        bodyText += `❖ ${finalPriceText}: ${formattedMoney}\n`;
-      });
-      const vatText = document.getElementById('vatText').value;
-      if(vatText) bodyText += `${vatText}\n`;
-      
-      if (document.getElementById('includeWarranty').checked) {
-        bodyText += `\nתוקף אחריות: בעבור ${document.getElementById('warrantyFor').value || 'איטום העבודה'} למשך ${document.getElementById('warrantyYears').value}.\n`;
-      }
-      
-      bodyText += `\nבברכה,\nי.שם-טוב\n054-2359359`;
-      
-      const mailtoUrl = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(bodyText)}`;
+      const mailtoUrl = `mailto:?subject=\${encodeURIComponent(subject)}&body=\${encodeURIComponent(bodyText)}`;
       window.location.href = mailtoUrl;
     }
 
