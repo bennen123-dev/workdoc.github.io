@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <script>
     // 🔑 שנה כאן את הסיסמה שלך בעתיד (החלף את ה-1234 במה שתרצה, אך שמור על הגרשיים)
-    const SECRET_PASSWORD = "221170";
+    const SECRET_PASSWORD = "1234";
 
     // מנגנון נעילת דף מאובטח
     (function() {
@@ -81,8 +81,9 @@
           </style>
         </head>
         <body>
-          \${previewContent}
+          ${previewContent}
           <script>
+            // ממתין שהלוגו ייטען ואז מדפיס וסוגר את החלון
             window.onload = function() {
               window.print();
               setTimeout(function() { window.close(); }, 500);
@@ -283,7 +284,7 @@
         <h3>מפרט הפעולות שנבחרו להצעה:</h3>
         <div id="selectedItems" class="selected-list"></div>
 
-        <h3>תמחור העבודה</h3>
+        <h3 style="margin-top: 25px;">תמחור העבודה</h3>
         <div id="pricesContainer"></div>
         <button type="button" class="btn-add" style="background:#f0fdf4; color:#166534; border-color:#166534;" onclick="addPriceItem()">➕ הוסף שורת מחיר חדשה</button>
 
@@ -617,18 +618,18 @@
 
           <div class="section-title">להלן מפרט הפעולות המתבקשות :</div>
           <div style="margin-bottom: 15px;">
-            \${formatWorkItemsHtml()}
+            ${formatWorkItemsHtml()}
           </div>
 
           <div class="section-title">להלן המחירים:</div>
           <div style="margin-bottom: 15px;">
-            \${formatPricesHtml()}
-            \${vatText ? `<div style="margin-top: 6px;">\${vatText}</div>` : ''}
+            ${formatPricesHtml()}
+            ${vatText ? `<div style="margin-top: 6px;">${vatText}</div>` : ''}
           </div>
 
-          \${warrantyHtml}
+          ${warrantyHtml}
 
-          \${notes ? `<div class="doc-text" style="margin-top: 15px;">\${notes}</div>` : ''}
+          ${notes ? `<div class="doc-text" style="margin-top: 15px;">${notes}</div>` : ''}
 
           <div class="closing-signature">
             <div>בברכה,</div>
@@ -644,10 +645,44 @@
     }
 
     function sendViaEmail() {
-      const subject = "י.שם-טוב | הצעת מחיר";
-      const bodyText = "היי, בהמשך לשיחתנו להלן הצעת מחיר לאיטום.";
+      const subject = "י.שם-טוב | " + (document.getElementById('subject').value || 'הצעת מחיר');
+      const customer = document.getElementById('customer').value || '';
+      const address = document.getElementById('address').value || '';
+      const workDescription = document.getElementById('workDescription').value || '';
       
-      const mailtoUrl = `mailto:?subject=\${encodeURIComponent(subject)}&body=\${encodeURIComponent(bodyText)}`;
+      let bodyText = `שלום ${customer},\n`;
+      if(address) bodyText += `כתובת העבודה: ${address}\n`;
+      bodyText += `\nתיאור העבודה: ${workDescription}\n\n`;
+      
+      bodyText += `--- מפרט הפעולות ---\n`;
+      const hebLetters = ['א', 'ב', 'ג', 'ד', 'ה', 'ו', 'ז', 'ח', 'ט', 'י', 'כ', 'ל', 'מ', 'נ', 'ס', 'ע'];
+      let letterIndex = 0;
+      selectedItems.forEach(item => {
+        if (item.type === 'note') {
+          bodyText += `* ${item.text}\n`;
+        } else {
+          bodyText += `${hebLetters[letterIndex]}. ${item.text}\n`;
+          letterIndex++;
+        }
+      });
+      
+      bodyText += `\n--- תמחור ---\n`;
+      const prices = getPrices();
+      prices.forEach(item => {
+        const finalPriceText = item.customPriceText ? item.customPriceText : item.priceText;
+        const formattedMoney = item.amount ? `${Number(item.amount).toLocaleString()} ₪` : '';
+        bodyText += `❖ ${finalPriceText}: ${formattedMoney}\n`;
+      });
+      const vatText = document.getElementById('vatText').value;
+      if(vatText) bodyText += `${vatText}\n`;
+      
+      if (document.getElementById('includeWarranty').checked) {
+        bodyText += `\nתוקף אחריות: בעבור ${document.getElementById('warrantyFor').value || 'איטום העבודה'} למשך ${document.getElementById('warrantyYears').value}.\n`;
+      }
+      
+      bodyText += `\nבברכה,\nי.שם-טוב\n054-2359359`;
+      
+      const mailtoUrl = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(bodyText)}`;
       window.location.href = mailtoUrl;
     }
 
