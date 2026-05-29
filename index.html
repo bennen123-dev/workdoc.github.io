@@ -10,7 +10,7 @@
     (function() {
       let authenticated = false;
       while (!authenticated) {
-        const userInput = prompt("Mערכת הצעות מחיר חסומה.\nאנא הכנס סיסמה כדי להיכנס:");
+        const userInput = prompt("מערכת הצעות מחיר חסומה.\nאנא הכנס סיסמה כדי להיכנס:");
         if (userInput === null) {
           document.write("<body style='font-family:Arial; text-align:center; padding-top:100px; background:#f3f4f6;'><h2>הגישה נדחתה. הדף חסום.</h2></body>");
           window.stop();
@@ -37,19 +37,14 @@
           <style>
             @page {
               size: A4;
-              margin: 0 !important; /* דוחף את כותרות ה-URL של האייפון מחוץ לדף */
-            }
-            html, body {
-              margin: 0;
-              padding: 0;
-              -webkit-print-color-adjust: exact;
-              print-color-adjust: exact;
+              margin: 0mm; /* מבטל לחלוטין כותרות ונתיבי URL של הדפדפן */
             }
             body {
               font-family: Arial, sans-serif;
               direction: rtl;
               background: #fff;
-              padding: 25mm 20mm 25mm 20mm; /* השוליים האמיתיים של המסמך מוגדרים פה */
+              margin: 0;
+              padding: 40px 45px;
               box-sizing: border-box;
               color: #000;
               font-size: 14px;
@@ -368,7 +363,7 @@
       materials: [
         'מריחת זפת חמה של חברת ביטום מסוג - 25/75.',
         'מריחת פריימר תקני 101 של חברת ביטום כחומר מקשר בין רצפת הגג לשכבת האיטום החדש, בעל תו תקן ישראלי והמתנה לייבוש תקני.',
-        'אספקה והלחמת יריעות ביטומניות מסוג - APP שכבה בעובי 5 מ״מ עם אגרגרת, בעלות תו תקן של חברת ביטום. היריעות ירותכו בחפיפה של 10 ס״מ עם עליה של 30 ס״מ סביב היקף השטח.',
+        'אספקה והלחמת יריעות ביטומניות מסוג - APP שכבה בעובי 5 מ״מ עם אגרגרת, בעלות תו תקן של חברת ביטום. היריעות ירותכו בחפיפה של 10 ס״מ com עליה של 30 ס״מ סביב היקף השטח.',
         'אספקה והלחמת יריעות ביטומניות מסוג - SBS שכבה בעובי 5 מ״מ. היריעות ירותכו בשתי שכבות, בעלות תו תקן של חברת ביטום. היריעות ירותכו בחפיפה של 10 ס״מ עם עליה של 30 ס״מ סביב היקף השטח.',
         'אספקה והלחמת יריעות ביטומניות מסוג - SBS שכבה בעובי 4 מ״מ, בעלות תו תקן של חברת ביטום. היריעות ירותכו בחפיפה של 10 ס״מ עם עליה של 30 ס״מ סביב היקף הגג.',
         'מריחת חומר מסוג - ST של חברת דבטק, זהו חומר על בסיס סיליקוני תוצרת גרמניה העמיד למים עומדים ולקרני ה-UV של השמש. המריחה תתבצע ב-2 שכבות לקבלת שכבת איטום תקנית.',
@@ -390,8 +385,8 @@
         bankElement.innerHTML = bankItems[category].map((text, index) => `
           <div class="bank-item">
             <input type="checkbox" data-category="${category}" data-index="${index}">
-            <span>\${text}</span>
-            <button type="button" class="btn-delete-bank" onclick="removeItemFromBank('\${category}', \${index}, event)">❌</button>
+            <span>${text}</span>
+            <button type="button" class="btn-delete-bank" onclick="removeItemFromBank('${category}', ${index}, event)">❌</button>
           </div>
         `).join('');
       });
@@ -469,12 +464,12 @@
 
       box.innerHTML = selectedItems.map((item, index) => `
         <div class="selected-item">
-          <strong>\${item.type === 'note' ? 'הערה ממודגשת' : 'סעיף'}:</strong> \${item.text}
+          <strong>${item.type === 'note' ? 'הערה ממודגשת' : 'סעיף'}:</strong> ${item.text}
           <div class="selected-actions">
-            <button type="button" class="btn-small" onclick="moveItem(\${index}, -1)">⬆️ למעלה</button>
-            <button type="button" class="btn-small" onclick="moveItem(\${index}, 1)">⬇️ למטה</button>
-            <button type="button" class="btn-note" onclick="addNoteAfter(\${index})">🟨 הוסף הערה מתחת</button>
-            <button type="button" class="btn-remove" onclick="removeSelectedItem(\${index})">מחק</button>
+            <button type="button" class="btn-small" onclick="moveItem(${index}, -1)">⬆️ למעלה</button>
+            <button type="button" class="btn-small" onclick="moveItem(${index}, 1)">⬇️ למטה</button>
+            <button type="button" class="btn-note" onclick="addNoteAfter(${index})">🟨 הוסף הערה מתחת</button>
+            <button type="button" class="btn-remove" onclick="removeSelectedItem(${index})">מחק</button>
           </div>
         </div>
       `).join('');
@@ -492,7 +487,7 @@
         <select class="priceText" onchange="generatePreview()">
           <option value="המחיר בעבור המערכת לאיטום הגג">המחיר בעבור המערכת לאיטום הגג</option>
           <option value="המחיר בעבור העבודה הינו">המחיר בעבור העבודה הינו</option>
-          <option value="המחיר בעבור סעיף \${letters[index] || ''}">המחיר בעבור סעיף \${letters[index] || ''}</option>
+          <option value="המחיר בעבור סעיף ${letters[index] || ''}">המחיר בעבור סעיף ${letters[index] || ''}</option>
         </select>
 
         <label>סכום בשקלים (מספר בלבד)</label>
@@ -524,8 +519,8 @@
 
       return prices.map(item => {
         const finalPriceText = item.customPriceText ? item.customPriceText : item.priceText;
-        const formattedMoney = item.amount ? `\${Number(item.amount).toLocaleString()} ₪` : '';
-        return `<div class="price-line">❖ \${finalPriceText}\${formattedMoney ? ' : ' + formattedMoney : ''}</div>`;
+        const formattedMoney = item.amount ? `${Number(item.amount).toLocaleString()} ₪` : '';
+        return `<div class="price-line">❖ ${finalPriceText}${formattedMoney ? ' : ' + formattedMoney : ''}</div>`;
       }).join('');
     }
 
@@ -537,9 +532,9 @@
 
       return selectedItems.map(item => {
         if (item.type === 'note') {
-          return `<div class="note-row">\${item.text}</div>`;
+          return `<div class="note-row">${item.text}</div>`;
         }
-        const line = `<div class="item-row">\${hebLetters[letterIndex]}. \${item.text}</div>`;
+        const line = `<div class="item-row">${hebLetters[letterIndex]}. ${item.text}</div>`;
         letterIndex++;
         return line;
       }).join('');
@@ -577,7 +572,7 @@
       if (dateValue) {
         const parts = dateValue.split('-');
         if (parts.length === 3) {
-          formattedDate = `\${parts[2]}/\${parts[1]}/\${parts[0]}`;
+          formattedDate = `${parts[2]}/${parts[1]}/${parts[0]}`;
         }
       }
 
@@ -586,7 +581,7 @@
         warrantyHtml = `
           <div class="section-title">להלן תוקף אחריות :</div>
           <div style="margin-bottom: 15px;">
-            <div>❖ אחריות בעבור \${warrantyFor} תינתן \${warrantyYears}.</div>
+            <div>❖ אחריות בעבור ${warrantyFor} תינתן ${warrantyYears}.</div>
             <div>❖ האחריות היא רק על העבודה שבוצעה ע״י חברת י.שם-טוב.</div>
             <div class="certification-text">ברשותנו תעודת אוטם מורשה וניסיון של למעלה מ־20 שנה בתחום האיטום. כלל העבודות מבוצעות תוך הקפדה על סטנדרטים גבוהים, שימוש בחומרים איכותיים ומתן פתרונות מקצועיים ואמינים לאורך זמן.</div>
           </div>
@@ -603,21 +598,21 @@
 
           <div class="customer-info-box">
             <div class="info-right">
-              <div class="info-row">לכבוד: \${customer}</div>
-              <div class="info-row">רחוב: \${address}</div>
+              <div class="info-row">לכבוד: ${customer}</div>
+              <div class="info-row">רחוב: ${address}</div>
               <div style="margin-top: 10px;">שלום רב,</div>
             </div>
             <div class="info-left">
-              <div class="info-row">\${formattedDate}</div>
-              <div class="info-row">\${hebrewDate}</div>
+              <div class="info-row">${formattedDate}</div>
+              <div class="info-row">${hebrewDate}</div>
             </div>
           </div>
 
-          <div class="doc-subject">הנדון : \${subject}</div>
-          <div class="doc-text">\${openingText}</div>
+          <div class="doc-subject">הנדון : ${subject}</div>
+          <div class="doc-text">${openingText}</div>
 
           <div style="margin-bottom: 15px;">
-            <strong>תיאור העבודה והמקום :</strong> \${workDescription}
+            <strong>תיאור העבודה והמקום :</strong> ${workDescription}
           </div>
 
           <div class="section-title">להלן מפרט הפעולות המתבקשות :</div>
@@ -650,8 +645,9 @@
 
     function sendViaEmail() {
       const subject = "י.שם-טוב | הצעת מחיר";
-      // גוף המייל הושאר ריק לחלוטין לבקשתך
-      const mailtoUrl = `mailto:?subject=\${encodeURIComponent(subject)}`;
+      const bodyText = "היי, בהמשך לשיחתנו להלן הצעת מחיר לאיטום.";
+      
+      const mailtoUrl = `mailto:?subject=\${encodeURIComponent(subject)}&body=\${encodeURIComponent(bodyText)}`;
       window.location.href = mailtoUrl;
     }
 
