@@ -10,7 +10,7 @@
     (function() {
       let authenticated = false;
       while (!authenticated) {
-        const userInput = prompt("M מערכת הצעות מחיר חסומה.\nאנא הכנס סיסמה כדי להיכנס:");
+        const userInput = prompt("מערכת הצעות מחיר חסומה.\nאנא הכנס סיסמה כדי להיכנס:");
         if (userInput === null) {
           document.write("<body style='font-family:Arial; text-align:center; padding-top:100px; background:#f3f4f6;'><h2>הגישה נדחתה. הדף חסום.</h2></body>");
           window.stop();
@@ -81,7 +81,7 @@
           </style>
         </head>
         <body>
-          ${previewContent}
+          \${previewContent}
           <script>
             window.onload = function() {
               window.print();
@@ -617,18 +617,18 @@
 
           <div class="section-title">להלן מפרט הפעולות המתבקשות :</div>
           <div style="margin-bottom: 15px;">
-            ${formatWorkItemsHtml()}
+            \${formatWorkItemsHtml()}
           </div>
 
           <div class="section-title">להלן המחירים:</div>
           <div style="margin-bottom: 15px;">
-            ${formatPricesHtml()}
-            ${vatText ? `<div style="margin-top: 6px;">${vatText}</div>` : ''}
+            \${formatPricesHtml()}
+            \${vatText ? `<div style="margin-top: 6px;">\${vatText}</div>` : ''}
           </div>
 
-          ${warrantyHtml}
+          \${warrantyHtml}
 
-          ${notes ? `<div class="doc-text" style="margin-top: 15px;">${notes}</div>` : ''}
+          \${notes ? `<div class="doc-text" style="margin-top: 15px;">\${notes}</div>` : ''}
 
           <div class="closing-signature">
             <div>בברכה,</div>
@@ -643,12 +643,11 @@
       `;
     }
 
-    // 📧 פונקציית מייל נקייה וקצרה לבקשתך
     function sendViaEmail() {
       const subject = "י.שם-טוב | הצעת מחיר";
       const bodyText = "היי, בהמשך לשיחתנו להלן הצעת מחיר לאיטום.";
       
-      const mailtoUrl = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(bodyText)}`;
+      const mailtoUrl = `mailto:?subject=\${encodeURIComponent(subject)}&body=\${encodeURIComponent(bodyText)}`;
       window.location.href = mailtoUrl;
     }
 
