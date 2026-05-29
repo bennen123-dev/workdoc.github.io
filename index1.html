@@ -3,17 +3,16 @@
 <head>
   <meta charset="UTF-8" />
   <script>
-    // 🔑 שנה כאן את הסיסמה שלך בעתיד (החלף את ה-1234 במה שתרצה, אבל השאר את הגרשיים)
+    // 🔑 שנה כאן את הסיסמה שלך בעתיד (החלף את ה-1234 במה שתרצה, אך שמור על הגרשיים)
     const SECRET_PASSWORD = "1234";
 
-    // מנגנון נעילה אוטומטי - פועל מיד לפני טעינת הדף
+    // מנגנון נעילת דף מאובטח
     (function() {
       let authenticated = false;
       while (!authenticated) {
         const userInput = prompt("מערכת הצעות מחיר חסומה.\nאנא הכנס סיסמה כדי להיכנס:");
         if (userInput === null) {
-          // אם המשתמש לחץ "ביטול" - הדף יישאר ריק
-          document.write("<body style='font-family:Arial; text-align:center; padding-top:100px;'><h2>הגישה נדחתה. הדף חסום.</h2></body>");
+          document.write("<body style='font-family:Arial; text-align:center; padding-top:100px; background:#f3f4f6;'><h2>הגישה נדחתה. הדף חסום.</h2></body>");
           window.stop();
           break;
         } else if (userInput === SECRET_PASSWORD) {
@@ -52,10 +51,12 @@
     .selected-item:last-child { border-bottom:none; }
     .selected-actions { display:flex; flex-wrap:wrap; gap:8px; margin-top:10px; }
     .price-item { background:#f8fafc; border:1px solid #ddd; border-radius:10px; padding:14px; margin-top:12px; }
-     
+      
     .btn-add { background:#e8eef7; color: #1e40af; width: 100%; padding: 14px; border: 1px dashed #1e40af; border-radius: 9px; }
     .btn-main { background:#059669; color:white; width:100%; font-weight:bold; font-size:18px; padding:16px; margin-top: 20px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
     .btn-main:hover { background:#047857; }
+    .btn-email { background:#2563eb; color:white; width:100%; font-weight:bold; font-size:16px; padding:14px; margin-top: 10px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+    .btn-email:hover { background:#1d4ed8; }
     .btn-remove { background:#fee2e2; color:#991b1b; }
     .btn-note { background:#fff3cd; color: #92400e; }
     .btn-small { background:#eef2ff; color: #3730a3; padding: 8px 12px; font-size: 13px; }
@@ -66,7 +67,7 @@
     .checkbox-container label { margin: 0; cursor: pointer; }
     .warranty-fields { display: none; background: #f8fafc; padding: 14px; border-radius: 8px; border: 1px solid #e2e8f0; margin-top: 8px; }
     .warranty-fields.active { display: block; }
-     
+      
     /* עיצוב טקסט קטן להסמכה */
     .certification-text { font-size: 12.5px; color: #333; margin-top: 8px; text-align: justify; }
 
@@ -93,37 +94,37 @@
       display: flex;
       flex-direction: column;
     }
-     
+      
     /* קופסת תוכן המסמך */
     .doc-content { flex: 1; }
-     
+      
     /* קופסת לוגו ממורכזת */
     .logo-box { text-align: center; margin-bottom: 15px; padding-top: 5px; width: 100%; }
     .company-logo { max-height: 75px; width: auto; display: inline-block; }
     .logo-subtitle { font-family: Arial, Helvetica, sans-serif; font-weight: bold; font-size: 13px; color: #222; letter-spacing: 0.5px; margin-top: 6px; }
-     
+      
     .doc-divider { height: 1.5px; background-color: #000; margin: 12px 0 20px 0; width: 100%; }
-     
+      
     /* קוביית פרטי הלקוח והתאריכים */
     .customer-info-box { display: flex; justify-content: space-between; margin-bottom: 20px; }
     .info-right { text-align: right; }
     .info-left { text-align: left; }
     .info-row { margin-bottom: 4px; }
-     
+      
     /* הנדון ממורכז */
     .doc-subject { font-size: 15px; font-weight: bold; margin: 20px 0; text-align: center; text-decoration: underline; }
-     
+      
     /* כותרות סעיפים */
     .section-title { font-size: 14.5px; font-weight: bold; color: #000; margin-top: 18px; margin-bottom: 6px; text-decoration: underline; }
-     
+      
     .doc-text { margin-bottom: 10px; white-space: pre-line; text-align: justify; }
     .item-row { margin-bottom: 5px; padding-right: 5px; text-align: justify; }
     .note-row { font-weight: bold; margin: 8px 0; padding-right: 15px; }
     .price-line { margin-bottom: 4px; font-weight: bold; }
-     
+      
     /* אזור חתימה */
     .closing-signature { margin-top: 35px; margin-bottom: 40px; text-align: right; }
-     
+      
     /* כותרת תחתית (Footer) כטקסט רגיל ויציב בתחתית העמוד הלבן */
     .footer-normal { 
       text-align: center; 
@@ -147,10 +148,17 @@
     }
 
     /* =================================================== */
-    /* חוקי קסם מוחלטים להדפסה ושמירה נקייה ל-PDF          */
+    /* חוקי קסם מוחלטים להדפסה נקייה ללא נתיבי דפדפן וכתובות האתר */
     /* =================================================== */
     @media print {
-      @page { size: A4; margin: 12mm 15mm 15mm 15mm; }
+      @page { 
+        size: A4; 
+        margin: 15mm 15mm 15mm 15mm; /* הגדרת שוליים שמבטלת את כותרות ה-URL של הדפדפן */
+      }
+      html, body {
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
       body { background: #fff; padding: 0; margin: 0; }
       .card:not(.preview-card), h2:not(.print-visible), form, .tabs, button, .no-print { display: none !important; }
       .container { display: block; margin: 0; padding: 0; }
@@ -197,7 +205,7 @@
         <input type="text" id="workDescription" value="איטום גג." />
 
         <h3 style="margin-top: 25px; margin-bottom: 5px;">בנק סעיפי עבודה</h3>
-         
+          
         <label style="margin-top: 5px; color: #4b5563;">הוספת סעיף חדש לבנק (לטאב הנבחר):</label>
         <div class="custom-bank-input-group">
           <input type="text" id="customBankText" placeholder="הקלד כאן סעיף עבודה חדש שתרצה להוסיף לבנק..." />
@@ -235,7 +243,7 @@
         </select>
 
         <h3>תקופת אחריות והערות</h3>
-         
+          
         <div class="checkbox-container">
           <input type="checkbox" id="includeWarranty" onchange="toggleWarrantyFields(); generatePreview();" checked />
           <label for="includeWarranty">הוסף סעיף אחריות להצעת המחיר</label>
@@ -259,6 +267,7 @@
         <textarea id="notes" placeholder="למשל: נשמח לענות לכל שאלה."></textarea>
 
         <button type="submit" class="btn-main">📥 שמירה כ-PDF / הדפסת הצעה נקייה</button>
+        <button type="button" class="btn-email" onclick="sendViaEmail()">📧 שליחת ההצעה ישירות במייל</button>
       </form>
     </div>
 
@@ -292,7 +301,7 @@
         'פירוק כל היריעות הנפוחות סביב היקף השטח ופינוי הפסולת למכולה.',
         'בטרם תחילת העבודות יש לבצע פירוק של כל המרצפות וחומרי הריצוף במרפסת, לנקות את השטח מהפסולת ולפנות את כל הפסולת למכולה/לאתר מורשה.',
         'שטיפת השטח בלחץ מים לקבלת תשתית טובה לביצוע עבודות האיטום.',
-        'תיקוני גלאנס (בטון) במקומות הנדרשים - כלומר לאחר גילוי תשתית הבטון בשטח יש לוואא כי השטח חלק מכל שיפוע על מנת לקבל תשתית חלקה ותקנית לריתוך היריעות.'
+        'תיקוני גלאנס (בטון) במקומות הנדרשים - כלומר לאחר גילוי תשתית הבטון בשטח יש לוודא כי השטח חלק מכל שיפוע על מנת לקבל תשתית חלקה ותקנית לריתוך היריעות.'
       ],
       wall: [
         'שטיפת הקיר בלחץ מים להכנת תשתית תקנית לביצוע עבודות האיטום.',
@@ -582,6 +591,67 @@
       `;
     }
 
+    // פונקציית שליחה מהירה במייל ישירות מהנייד
+    function sendViaEmail() {
+      const subject = "י.שם-טוב | " + (document.getElementById('subject').value || 'הצעת מחיר');
+      const customer = document.getElementById('customer').value || '';
+      const address = document.getElementById('address').value || '';
+      const workDescription = document.getElementById('workDescription').value || '';
+      
+      let bodyText = `שלום ${customer},\n`;
+      if(address) bodyText += `כתובת העבודה: ${address}\n`;
+      bodyText += `\nתיאור העבודה: ${workDescription}\n\n`;
+      
+      bodyText += `--- מפרט הפעולות ---\n`;
+      const hebLetters = ['א', 'ב', 'ג', 'ד', 'ה', 'ו', 'ז', 'ח', 'ט', 'י', 'כ', 'ל', 'מ', 'נ', 'ס', 'ע'];
+      let letterIndex = 0;
+      selectedItems.forEach(item => {
+        if (item.type === 'note') {
+          bodyText += `* ${item.text}\n`;
+        } else {
+          bodyText += `${hebLetters[letterIndex]}. ${item.text}\n`;
+          letterIndex++;
+        }
+      });
+      
+      bodyText += `\n--- תמחור ---\n`;
+      const prices = getPrices();
+      prices.forEach(item => {
+        const finalPriceText = item.customPriceText ? item.customPriceText : item.priceText;
+        const formattedMoney = item.amount ? `${Number(item.amount).toLocaleString()} ₪` : '';
+        bodyText += `❖ ${finalPriceText}: ${formattedMoney}\n`;
+      });
+      const vatText = document.getElementById('vatText').value;
+      if(vatText) bodyText += `${vatText}\n`;
+      
+      if (document.getElementById('includeWarranty').checked) {
+        bodyText += `\nתוקף אחריות: בעבור ${document.getElementById('warrantyFor').value || 'איטום העבודה'} למשך ${document.getElementById('warrantyYears').value}.\n`;
+      }
+      
+      bodyText += `\nבברכה,\nי.שם-טוב\n054-2359359`;
+      
+      const mailtoUrl = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(bodyText)}`;
+      window.location.href = mailtoUrl;
+    }
+
     function bindLivePreview() {
       document.querySelectorAll('#quoteForm input, #quoteForm textarea, #quoteForm select').forEach(element => {
-        element.addEventListener('input', generatePreview
+        element.addEventListener('input', generatePreview);
+        element.addEventListener('change', generatePreview);
+      });
+    }
+
+    renderBank();
+    renderSelectedItems();
+    addPriceItem();
+    
+    const today = new Date();
+    const offset = today.getTimezoneOffset();
+    const localToday = new Date(today.getTime() - (offset*60*1000));
+    document.getElementById('date').value = localToday.toISOString().split('T')[0];
+    
+    bindLivePreview();
+    generatePreview();
+  </script>
+</body>
+</html>
